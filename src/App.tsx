@@ -3,6 +3,7 @@ import './App.css'
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import testPdf from "./assets/test.pdf"
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -36,13 +37,18 @@ function App() {
       </div>
       <div className="pdf-container" >      
         <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
-          {Array.from(new Array(numPages), (_, i) => 
-          <Page 
-          pageNumber={i+1}
-          scale={scale/100} 
-          renderAnnotationLayer={false}
-          className='page' 
-          />)}
+          <TransformWrapper>
+            <TransformComponent>
+            {Array.from(new Array(numPages), (_, i) => 
+              <Page 
+              pageNumber={i+1}
+              scale={scale/100} 
+              renderAnnotationLayer={false}
+              className='page' 
+              />
+              )}
+            </TransformComponent>
+          </TransformWrapper>
         </Document>
       </div>
     </div>
