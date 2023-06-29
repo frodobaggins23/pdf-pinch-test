@@ -40,3 +40,19 @@
 .read-the-docs {
   color: #888;
 }
+
+.pdf-container {
+  width:80vw;
+  height: 80vh;
+  overflow: auto;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+}
+
+.page {
+  margin: 1em 0;
+}
+
+canvas {
+    margin: 0 auto !important;
+}

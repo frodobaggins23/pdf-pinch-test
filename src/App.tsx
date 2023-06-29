@@ -1,34 +1,51 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+import testPdf from "./assets/test.pdf"
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [numPages, setNumPages] = useState(0);
+  const [scale, setScale] = useState(100);
 
+  const onDocumentLoadSuccess = ({ numPages }: {numPages: number}) => {
+    setNumPages(numPages);
+  }
+
+  const increaseScale = () => {
+    setScale(scale + 10);
+  }
+
+  const decreaseScale = () => {
+    setScale(scale - 10);
+  }
+  
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <h1>PDF test</h1>
+      <div className="controls">
+        <button onClick={decreaseScale}>-</button>
+        <span>{scale}%</span>
+        <button onClick={increaseScale}>+</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="pdf-container" >      
+        <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
+          {Array.from(new Array(numPages), (_, i) => 
+          <Page 
+          pageNumber={i+1}
+          scale={scale/100} 
+          renderAnnotationLayer={false}
+          className='page' 
+          />)}
+        </Document>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
