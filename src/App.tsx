@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -10,10 +10,41 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
+type WidthType = 'sm' | 'md' | 'lg' | 'xl';
+
+function useWidth(): WidthType {
+  const [width, setWidth] = useState<WidthType>('xl');
+
+  useEffect(() => {
+    const handleResize = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth < 576) {
+        setWidth('sm');
+      } else if (windowWidth < 768) {
+        setWidth('md');
+      } else if (windowWidth < 992) {
+        setWidth('lg');
+      } else {
+        setWidth('xl');
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return width;
+}
+
 
 function App() {
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(100);
+  const width = useWidth();
+  const isDesktop = width === 'xl' || width === 'lg';
+  console.log(width);
 
   const onDocumentLoadSuccess = ({ numPages }: {numPages: number}) => {
     setNumPages(numPages);
@@ -30,25 +61,26 @@ function App() {
   return (
     <div className="App">
       <h1>PDF test</h1>
-      <div className="controls">
+      {isDesktop && <div className="controls">
         <button onClick={decreaseScale}>-</button>
         <span>{scale}%</span>
         <button onClick={increaseScale}>+</button>
-      </div>
+      </div>}
       <div className="pdf-container" >      
         <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
-          <TransformWrapper>
+          {Array.from(new Array(numPages), (_, i) => 
+          <div className='page' >
+          <TransformWrapper centerOnInit centerZoomedOut panning={{lockAxisY:true}}>
             <TransformComponent>
-            {Array.from(new Array(numPages), (_, i) => 
               <Page 
               pageNumber={i+1}
-              scale={scale/100} 
+              scale={isDesktop ? scale/100 : 0.5} 
               renderAnnotationLayer={false}
-              className='page' 
               />
-              )}
             </TransformComponent>
           </TransformWrapper>
+          </div>
+          )}
         </Document>
       </div>
     </div>
