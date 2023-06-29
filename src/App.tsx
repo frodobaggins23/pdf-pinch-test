@@ -68,19 +68,19 @@ function App() {
       </div>}
       <div className="pdf-container" >      
         <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
-          {Array.from(new Array(numPages), (_, i) => 
-          <div className='page' >
-          <TransformWrapper centerOnInit centerZoomedOut panning={{lockAxisY:true}}>
+          <TransformWrapper centerOnInit centerZoomedOut panning={{disabled:true}}>
             <TransformComponent>
+            {Array.from(new Array(numPages), (_, i) => 
+            <div className='page' >
               <Page 
               pageNumber={i+1}
               scale={isDesktop ? scale/100 : 0.5} 
               renderAnnotationLayer={false}
               />
+              </div>
+              )}
             </TransformComponent>
           </TransformWrapper>
-          </div>
-          )}
         </Document>
       </div>
     </div>
