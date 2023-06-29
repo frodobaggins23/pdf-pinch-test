@@ -41,7 +41,7 @@ function useWidth(): WidthType {
 
 function App() {
   const [numPages, setNumPages] = useState(0);
-  const [scale, setScale] = useState(100);
+  const [scale, setScale] = useState(65);
   const width = useWidth();
   const isDesktop = width === 'xl' || width === 'lg';
   console.log(width);
@@ -67,21 +67,28 @@ function App() {
         <button onClick={increaseScale}>+</button>
       </div>}
       <div className="pdf-container" >      
-        <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
-          <TransformWrapper centerOnInit centerZoomedOut panning={{disabled:true}}>
+          <TransformWrapper 
+          centerOnInit 
+          centerZoomedOut 
+          panning={{disabled:true}}
+          pinch={{step: 0.7}}
+          initialScale={scale/100}
+          onPinchingStop={(e)=>setScale(e.state.scale*100)}
+          >
             <TransformComponent>
+            <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess} >
             {Array.from(new Array(numPages), (_, i) => 
             <div className='page' >
-              <Page 
-              pageNumber={i+1}
-              scale={isDesktop ? scale/100 : 0.5} 
+              <Page
+              scale={scale/100} 
+              pageNumber={i+1} 
               renderAnnotationLayer={false}
               />
               </div>
               )}
+              </Document>
             </TransformComponent>
           </TransformWrapper>
-        </Document>
       </div>
     </div>
   )
